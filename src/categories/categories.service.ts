@@ -60,7 +60,7 @@ export class CategoriesService {
   }
 
   async findById(id: string) {
-    if (uuidValidate(id)) {
+    if (!uuidValidate(id)) {
       throw new HttpException('id is invalid', HttpStatus.CONFLICT);
     }
 
