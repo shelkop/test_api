@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { validate as uuidValidate } from 'uuid';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Repository } from 'typeorm';
@@ -59,6 +60,10 @@ export class CategoriesService {
   }
 
   async findById(id: string) {
+    if (uuidValidate(id)) {
+      throw new HttpException('id is invalid', HttpStatus.CONFLICT);
+    }
+
     const category = await this.categoryRepository.findOneBy({ id });
     if (!category) {
       throw new HttpException('category not found', HttpStatus.NOT_FOUND);
@@ -67,10 +72,9 @@ export class CategoriesService {
   }
 
   async findByUnique(unique: string) {
-    const category = await this.categoryRepository.findOneBy([
-      { id: unique },
-      { slug: unique },
-    ]);
+    const category = await this.categoryRepository.findOneBy(
+      uuidValidate(unique) ? { id: unique } : { slug: unique },
+    );
 
     if (!category) {
       throw new HttpException('category not found', HttpStatus.NOT_FOUND);

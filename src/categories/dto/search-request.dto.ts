@@ -3,7 +3,7 @@ import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class SearchRequestDto {
-  @Transform(({ value }) => value?.toLowerCase())
+  @Transform(({ value }) => value?.toLowerCase().trim())
   @ApiProperty({
     required: false,
     description: 'Category search',
@@ -15,7 +15,7 @@ export class SearchRequestDto {
 
   @Transform(({ obj, value }) => {
     if (!obj.search) {
-      return value;
+      return value.trim();
     }
   })
   @ApiProperty({
@@ -29,7 +29,7 @@ export class SearchRequestDto {
 
   @Transform(({ obj, value }) => {
     if (!obj.search) {
-      return value;
+      return value.trim();
     }
   })
   @ApiProperty({
