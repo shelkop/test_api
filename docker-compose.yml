@@ -1,24 +1,25 @@
 version: '3.3'
 
 services:
-  redis:
-    image: 'redis:alpine'
-    container_name: pub_sub
-    ports:
-      - '6379:6379'
+  database:
+    build:
+      context: .
+      dockerfile: pg.Dockerfile
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
-  backend:
-    restart: "on-failure"
-    build: ./
-    volumes:
-      - ./:/var/www/app
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    env_file: ./.env
     links:
-      - redis
+      - database
     environment:
-      - REDIS_HOST=pub_sub
-      - REDIS_PORT=6379
-    command:
-      npm run deploy
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=database

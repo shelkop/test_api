@@ -1,39 +1,34 @@
-import {ApiProperty, PartialType} from '@nestjs/swagger';
-import { CreateCategoryDto } from './create-category.dto';
-import {IsBoolean, IsNotEmpty, IsOptional, IsString} from "class-validator";
-import {Type} from "class-transformer";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 
-export class SearchCategoryDto {
+export class PaginationRequestDto {
   @ApiProperty({
-    description: "Category search",
-    example: "test",
+    required: false,
+    description: 'Pagination pageSize',
+    example: 2,
   })
-  @IsString()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(9)
   @IsOptional()
-  search: string;
-
-  @ApiProperty({
-    description: "Category name",
-    example: "test",
-  })
-  @IsString()
-  @IsOptional()
-  name: string;
+  public readonly pageSize: number = 2;
 
   @ApiProperty({
-    description: "Category description",
-    example: "test",
+    required: false,
+    description: 'Pagination page',
+    example: 1,
   })
-  @IsString()
-  @IsOptional()
-  description: string;
-
-  @ApiProperty({
-    description: "Category status",
-    example: true,
+  @Type(() => Number)
+  @Transform(({ value }) => {
+    if (value === 0) {
+      return 1;
+    }
+    return value;
   })
-  @Type(() => Boolean)
-  @IsBoolean()
+  @IsInt()
+  @Min(0)
   @IsOptional()
-  active: boolean;
+  public readonly page: number = 1;
 }

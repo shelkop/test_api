@@ -1,35 +1,35 @@
-import {ApiProperty, PartialType} from '@nestjs/swagger';
-import { CreateCategoryDto } from './create-category.dto';
-import {IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min} from "class-validator";
-import {Transform, Type} from "class-transformer";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
 
-export class PaginationRequestDto {
-  @ApiProperty({
-    description: "Pagination pageSize",
-    example: 2,
-  })
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(9)
-  @IsOptional()
-  public readonly pageSize: number = 2;
+const categoryOrders = [
+  'id',
+  'slug',
+  'name',
+  'description',
+  'active',
+  'createDate',
+  '-id',
+  '-slug',
+  '-name',
+  '-description',
+  '-active',
+  '-createDate',
+];
 
-  @ApiProperty({
-    description: "Pagination page",
-    example: 1,
+export class SortRequestDto {
+  @Transform(({ value }) => {
+    if (categoryOrders.includes(value)) {
+      return value;
+    }
+
+    return '-createDate';
   })
-  @Type(() => Number)
-  @Transform(({value}) => {
-        if (value === 0) {
-          return 1;
-        }
-        return value;
-      }
-  )
-  @IsInt()
-  @Min(0)
+  @ApiProperty({
+    required: false,
+    description: 'Sort',
+    example: '-createDate',
+  })
   @IsOptional()
-  public readonly page: number;
+  public readonly sort: string = '-createDate';
 }
-
